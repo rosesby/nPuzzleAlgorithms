@@ -42,17 +42,30 @@ public class NPuzzleSolver {
                 printSolutionPath(result.get(), elapsedTime, previousStates.size());
                 return;
             }
+            searchQueue.poll();
+        }
+        System.out.println("Search finished, without results");
+    }
 
-/*            for (NPuzzleNode node : searchQueue.peek().GenerateChilds()) {
+    public static void startSearch2(NPuzzleNode initialNode, NPuzzleNode targetNode) {
+        long initialTime = System.currentTimeMillis();
+        ArrayDeque<int[][]> previousStates = new ArrayDeque<>();
+        Deque<NPuzzleNode> searchQueue = new ArrayDeque<>();
+        searchQueue.add(initialNode);
+        previousStates.add(initialNode.getMatrix());
+
+        while (!searchQueue.isEmpty()) {
+            if (Arrays.deepEquals(searchQueue.peek().getMatrix(), solution)) {
+                long elapsedTime = System.currentTimeMillis() - initialTime;
+                printSolutionPath(searchQueue.peek(), elapsedTime, previousStates.size());
+                return;
+            }
+            searchQueue.peek().GenerateChilds().forEach(node -> {
                 if (!previousStates.contains(node.getMatrix())) {
                     previousStates.add(node.getMatrix());
                     searchQueue.add(node);
-                    if (Arrays.deepEquals(node.getMatrix(), solution)) {
-                        printSolutionPath(node);
-                        return;
-                    }
                 }
-            }*/
+            });
             searchQueue.poll();
         }
         System.out.println("Search finished, without results");
