@@ -1,6 +1,7 @@
 package com.mcc;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class NPuzzleSolver {
     private static int[][] solution;
@@ -16,32 +17,32 @@ public class NPuzzleSolver {
     }
 
     public static void startSearch(NPuzzleNode initialNode, NPuzzleNode targetNode) {
+        long initialTime = System.currentTimeMillis();
         ArrayDeque<int[][]> previousStates = new ArrayDeque<>();
         Deque<NPuzzleNode> searchQueue = new ArrayDeque<>();
         searchQueue.add(initialNode);
+        while (!searchQueue.isEmpty()) { //While the queue has nodes
+            var result = searchQueue
+                    .peek()
+                    .GenerateChilds()
+                    .stream()
+                    .filter(node -> {
+                        boolean alreadyAdded = !previousStates.contains(node.getMatrix());
+                        if (alreadyAdded) {
+                            previousStates.add(node.getMatrix());
+                            searchQueue.add(node);
+                        }
+                        return alreadyAdded;
+                    })
+                    .filter(node -> Arrays.deepEquals(node.getMatrix(), solution))
+                    .findFirst();
 
-        {
-            while (!searchQueue.isEmpty()) { //While the queue has nodes
-                var result = searchQueue
-                        .peek()
-                        .GenerateChilds()
-                        .stream()
-                        .filter(node -> {
-                            boolean alreadyAdded = !previousStates.contains(node.getMatrix());
-                            if (alreadyAdded) {
-                                previousStates.add(node.getMatrix());
-                                searchQueue.add(node);
-                            }
-                            return alreadyAdded;
-                        })
-                        .filter(node -> Arrays.deepEquals(node.getMatrix(), solution))
-                        .findFirst();
+            if (result.isPresent()) {
+                long elapsedTime = System.currentTimeMillis() - initialTime;
+                printSolutionPath(result.get(), elapsedTime, previousStates.size());
+                return;
+            }
 
-                if (result.isPresent()) {
-                    printSolutionPath(result.get());
-                    return;
-                }
-                
 /*            for (NPuzzleNode node : searchQueue.peek().GenerateChilds()) {
                 if (!previousStates.contains(node.getMatrix())) {
                     previousStates.add(node.getMatrix());
@@ -52,13 +53,12 @@ public class NPuzzleSolver {
                     }
                 }
             }*/
-                searchQueue.poll();
-            }
+            searchQueue.poll();
         }
         System.out.println("Search finished, without results");
     }
 
-    private static void printSolutionPath(NPuzzleNode lastNode) {
+    private static void printSolutionPath(NPuzzleNode lastNode, long elapsedTime, int size) {
         NPuzzleNode actualNode = lastNode;
         StringBuilder stringBuilder = new StringBuilder();
         boolean condition;
@@ -70,6 +70,8 @@ public class NPuzzleSolver {
             stageCounter--;
         } while (condition);
         System.out.println("Solution Path");
-        System.out.println(stringBuilder);
+        System.out.print(stringBuilder);
+        System.out.println("ElapseTime : " + TimeUnit.MILLISECONDS.toSeconds(elapsedTime) + "s");
+        System.out.println("Generated tables : " + size);
     }
 }
