@@ -16,51 +16,32 @@ public class NPuzzleSolver {
         lastRowIndex = nPuzzleState.getMatrix()[0].length - 1;
     }
 
-    public static void startSearch(NPuzzleNode initialNode, NPuzzleNode targetNode) {
+    public static void startSearch2(NPuzzleNode initialNode, NPuzzleNode targetNode) {
         long initialTime = System.currentTimeMillis();
         ArrayDeque<int[][]> previousStates = new ArrayDeque<>();
         Deque<NPuzzleNode> searchQueue = new ArrayDeque<>();
         searchQueue.add(initialNode);
-        while (!searchQueue.isEmpty()) { //While the queue has nodes
-            var result = searchQueue
-                    .peek()
-                    .GenerateChilds()
-                    .stream()
-                    .filter(node -> {
-                        boolean alreadyAdded = !previousStates.contains(node.getMatrix());
-                        if (alreadyAdded) {
-                            previousStates.add(node.getMatrix());
-                            searchQueue.add(node);
-                        }
-                        return alreadyAdded;
-                    })
-                    .filter(node -> Arrays.deepEquals(node.getMatrix(), solution))
-                    .findFirst();
+        previousStates.add(initialNode.getMatrix());
 
-            if (result.isPresent()) {
+        while (!searchQueue.isEmpty()) { //While the queue has nodes
+            if (Arrays.deepEquals(searchQueue.peek().getMatrix(), solution)) {
                 long elapsedTime = System.currentTimeMillis() - initialTime;
-                printSolutionPath(result.get(), elapsedTime, previousStates.size());
+                printSolutionPath(searchQueue.peek(), elapsedTime, previousStates.size());
                 return;
             }
-
-/*            for (NPuzzleNode node : searchQueue.peek().GenerateChilds()) {
+            searchQueue.peek().GenerateChilds().forEach(node -> {
                 if (!previousStates.contains(node.getMatrix())) {
                     previousStates.add(node.getMatrix());
                     searchQueue.add(node);
-                    if (Arrays.deepEquals(node.getMatrix(), solution)) {
-                        printSolutionPath(node);
-                        return;
-                    }
                 }
-            }*/
+            });
             searchQueue.poll();
         }
         System.out.println("Search finished, without results");
     }
 
-    private int calculateCostOfActualPuzzle(NPuzzleNode targetNode, NPuzzleNode actualNode){
+    private int calculateCostOfActualPuzzle(NPuzzleNode targetNode, NPuzzleNode actualNode) {
         int cost = 0;
-
         int[][] targetPuzzle = targetNode.getMatrix();
         int[][] matrix = actualNode.getMatrix();
 
@@ -76,13 +57,13 @@ public class NPuzzleSolver {
         return cost;
     }
 
-    private int[] getPositionOfElementIn2DMatrix(int value, int[][] matrix){
+    private int[] getPositionOfElementIn2DMatrix(int value, int[][] matrix) {
         for (int y = 0; y < matrix[0].length; y++) {
             for (int x = 0; x < matrix.length; x++) {
                 if (matrix[y][x] == value) return new int[]{y, x};
             }
         }
-        return new int[]{-1,-1};
+        return new int[]{-1, -1};
     }
 
     private static void printSolutionPath(NPuzzleNode lastNode, long elapsedTime, int size) {
