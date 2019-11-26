@@ -14,13 +14,13 @@ public class Main {
 
         String numberOfGames;
         String gameSeparator;
-        String valueOfN;
+        int valueOfN;
         String targets;
         String tables;
 
         numberOfGames = bufferedReader.readLine();
         gameSeparator = bufferedReader.readLine();
-        valueOfN = bufferedReader.readLine();
+        valueOfN = Integer.parseInt(bufferedReader.readLine());
         targets = bufferedReader.readLine();
         tables = bufferedReader.readLine();
 
@@ -35,7 +35,7 @@ public class Main {
         int[] intArrayTarget = Arrays.stream(targets.split(" "))
                 .mapToInt(Integer::parseInt)
                 .toArray();
-        NPuzzleNode targetPuzzle = new NPuzzleNode(3,3, intArrayTarget);
+        NPuzzleNode targetPuzzle = new NPuzzleNode(valueOfN,valueOfN, intArrayTarget);
         targetPuzzle.print("Target");
 
         NPuzzleSolver.setWorkingSolution(targetPuzzle);
@@ -44,7 +44,9 @@ public class Main {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        NPuzzleNode initialPuzzle = new NPuzzleNode(3,3, intArray);
+        NPuzzleNode initialPuzzle = new NPuzzleNode(valueOfN,valueOfN, intArray);
         initialPuzzle.print("Initial");
+
+        NPuzzleSolver.startSearch(initialPuzzle, targetPuzzle);
     }
 }

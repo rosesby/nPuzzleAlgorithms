@@ -1,15 +1,13 @@
 package com.mcc;
 
-import java.util.HashSet;
+import java.util.*;
 
 public class NPuzzleSolver {
-    public static HashSet<int[][]> previousStates = new HashSet<>();
     private static int[][] solution;
-    public static HashSet<NPuzzleNode> actualLevelNodes = new HashSet<>();
-    public static HashSet<NPuzzleNode> nextLevelNodes = new HashSet<>();
     private static int lastColumnIndex, lastRowIndex;
 
-    private NPuzzleSolver() {}
+    private NPuzzleSolver() {
+    }
 
     public static void setWorkingSolution(NPuzzleNode nPuzzleState) {
         solution = nPuzzleState.getMatrix();
@@ -17,9 +15,53 @@ public class NPuzzleSolver {
         lastRowIndex = nPuzzleState.getMatrix()[0].length - 1;
     }
 
-    public static void startSearch(NPuzzleNode initialNode, NPuzzleNode targetNode){
+    public static void startSearch(NPuzzleNode initialNode, NPuzzleNode targetNode) {
+        ArrayDeque<int[][]> previousStates = new ArrayDeque<>();
+        Deque<NPuzzleNode> searchQueue = new ArrayDeque<>();
+        searchQueue.add(initialNode);
 
+        boolean result = false;
+
+        NPuzzleNode solutionNode = null;
+
+        while ((!searchQueue.isEmpty() && !result)) { //While the queue has nodes
+
+            if (previousStates.contains(solution)) {
+                System.out.println("found");
+                return;
+            }
+            searchQueue.peek().print("Original node");
+            for(NPuzzleNode node : searchQueue.peek().GenerateChilds()){
+                if (!previousStates.contains(node.getMatrix())) {
+                    previousStates.add(node.getMatrix());
+                    searchQueue.add(node);
+                    result  = Arrays.deepEquals(node.getMatrix(),solution);
+
+                    if (result) {
+                        System.out.println(result);
+                        solutionNode = node;
+                        printSolutionPath(solutionNode);
+                        break;
+                    }
+                }
+            }
+            searchQueue.poll();
+        }
+        System.out.println("Search finished");
     }
 
-
+    private static void printSolutionPath(NPuzzleNode lastNode) {
+        NPuzzleNode actualNode = lastNode;
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean condition;
+        int stageCounter = actualNode.getParentHierarchyNumber();
+        do{
+            stringBuilder.insert( 0,"Paso " + stageCounter + "\n" + actualNode.toString() + "\n");
+            condition = actualNode.parent != null;
+            actualNode = actualNode.parent;
+            stageCounter--;
+        }while (condition);
+        System.out.println("Solution Path");
+        System.out.println(stringBuilder);
+    }
 }

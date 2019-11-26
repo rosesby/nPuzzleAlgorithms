@@ -1,7 +1,9 @@
 package com.mcc;
 
+import org.apache.commons.lang3.SerializationUtils;
+
+import javax.swing.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class NPuzzleNode {
     private int[][] matrix;
@@ -20,7 +22,7 @@ public class NPuzzleNode {
         int pos = 0;
         for (int i = 0; i < ny ; i++) {
             for (int j = 0; j < nx ; j++) {
-                matrix[j][i] = initialState[pos];
+                matrix[i][j] = initialState[pos];
                 pos++;
             }
         }
@@ -31,33 +33,35 @@ public class NPuzzleNode {
         this.parent = parent;
     }
 
-    public void GenerateChilds() {
+    public ArrayList<NPuzzleNode> GenerateChilds() {
         int[] zeroIndex = findZero();
         int zx = zeroIndex[0];
         int zy = zeroIndex[1];
 
         if (zy > 0){
-            NPuzzleNode up = new NPuzzleNode(moveZeroUp(matrix, zeroIndex), this);
+            NPuzzleNode up = new NPuzzleNode(moveZeroUp(SerializationUtils.clone(matrix), zeroIndex), this);
             childs.add(up);
         }
         if (zy < lastRowIndex){
-            NPuzzleNode down = new NPuzzleNode(moveZeroDown(matrix, zeroIndex), this);
+            NPuzzleNode down = new NPuzzleNode(moveZeroDown(SerializationUtils.clone(matrix), zeroIndex), this);
             childs.add(down);
         }
         if (zx < lastColumnIndex){
-            NPuzzleNode right = new NPuzzleNode(moveZeroRight(matrix, zeroIndex), this);
+            NPuzzleNode right = new NPuzzleNode(moveZeroRight(SerializationUtils.clone(matrix), zeroIndex), this);
             childs.add(right);
         }
         if (zx > 0) {
-            NPuzzleNode left = new NPuzzleNode(moveZeroLeft(matrix, zeroIndex), this);
+            NPuzzleNode left = new NPuzzleNode(moveZeroLeft(SerializationUtils.clone(matrix), zeroIndex), this);
             childs.add(left);
         }
+        return childs;
     }
 
     public int[][] moveZeroUp(int[][] matrix, int[] zeroIndex) {
         int valueSave = matrix[ zeroIndex[0] ][ zeroIndex[1] - 1 ];
         matrix[ zeroIndex[0] ][ zeroIndex[1] ] = valueSave;
         matrix[ zeroIndex[0] ][ zeroIndex[1] - 1 ] = 0;
+        System.out.println(matrixToString(matrix));
         return matrix;
     }
 
@@ -65,6 +69,7 @@ public class NPuzzleNode {
         int valueSave = matrix[ zeroIndex[0] ][ zeroIndex[1] + 1 ];
         matrix[ zeroIndex[0] ][ zeroIndex[1] ] = valueSave;
         matrix[ zeroIndex[0] ][ zeroIndex[1] + 1 ] = 0;
+        System.out.println(matrixToString(matrix));
         return matrix;
     }
 
@@ -72,6 +77,7 @@ public class NPuzzleNode {
         int valueSave = matrix[ zeroIndex[0] + 1 ][ zeroIndex[1] ];
         matrix[ zeroIndex[0] ][ zeroIndex[1] ] = valueSave;
         matrix[ zeroIndex[0] + 1 ][ zeroIndex[1] ] = 0;
+        System.out.println(matrixToString(matrix));
         return matrix;
     }
 
@@ -79,6 +85,7 @@ public class NPuzzleNode {
         int valueSave = matrix[ zeroIndex[0] - 1 ][ zeroIndex[1] ];
         matrix[ zeroIndex[0] ][ zeroIndex[1] ] = valueSave;
         matrix[ zeroIndex[0] - 1 ][ zeroIndex[1] ] = 0;
+        System.out.println(matrixToString(matrix));
         return matrix;
     }
 
@@ -89,6 +96,16 @@ public class NPuzzleNode {
             }
         }
         return null;
+    }
+
+    public int getParentHierarchyNumber(){
+        NPuzzleNode actualNode = this;
+        int stageCounter = 0;
+        do{
+            actualNode = actualNode.parent;
+            stageCounter++;
+        }while (actualNode.parent != null);
+        return stageCounter;
     }
 
     public void print(String str){
@@ -107,12 +124,27 @@ public class NPuzzleNode {
         for (int y = 0; y < matrix[0].length; y++) {
             stringBuilder.append("|");
             for (int x = 0; x < matrix.length; x++) {
-                stringBuilder.append(" " + matrix[x][y] + " |");
+                stringBuilder.append(" " + matrix[y][x] + " |");
             }
             stringBuilder.append("\n");
         }
         return stringBuilder.toString();
     }
+
+    public static String matrixToString(int[][] matrix){
+        StringBuilder stringBuilder;
+        stringBuilder = new StringBuilder();
+
+        for (int y = 0; y < matrix[0].length; y++) {
+            stringBuilder.append("|");
+            for (int x = 0; x < matrix.length; x++) {
+                stringBuilder.append(" " + matrix[y][x] + " |");
+            }
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
 
     public int[][] getMatrix() {
         return matrix;
