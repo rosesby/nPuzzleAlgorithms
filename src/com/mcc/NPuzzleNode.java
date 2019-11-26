@@ -61,7 +61,6 @@ public class NPuzzleNode {
         int valueSave = matrix[ zeroIndex[0] ][ zeroIndex[1] - 1 ];
         matrix[ zeroIndex[0] ][ zeroIndex[1] ] = valueSave;
         matrix[ zeroIndex[0] ][ zeroIndex[1] - 1 ] = 0;
-        System.out.println(matrixToString(matrix));
         return matrix;
     }
 
@@ -69,7 +68,6 @@ public class NPuzzleNode {
         int valueSave = matrix[ zeroIndex[0] ][ zeroIndex[1] + 1 ];
         matrix[ zeroIndex[0] ][ zeroIndex[1] ] = valueSave;
         matrix[ zeroIndex[0] ][ zeroIndex[1] + 1 ] = 0;
-        System.out.println(matrixToString(matrix));
         return matrix;
     }
 
@@ -77,7 +75,6 @@ public class NPuzzleNode {
         int valueSave = matrix[ zeroIndex[0] + 1 ][ zeroIndex[1] ];
         matrix[ zeroIndex[0] ][ zeroIndex[1] ] = valueSave;
         matrix[ zeroIndex[0] + 1 ][ zeroIndex[1] ] = 0;
-        System.out.println(matrixToString(matrix));
         return matrix;
     }
 
@@ -85,7 +82,6 @@ public class NPuzzleNode {
         int valueSave = matrix[ zeroIndex[0] - 1 ][ zeroIndex[1] ];
         matrix[ zeroIndex[0] ][ zeroIndex[1] ] = valueSave;
         matrix[ zeroIndex[0] - 1 ][ zeroIndex[1] ] = 0;
-        System.out.println(matrixToString(matrix));
         return matrix;
     }
 
