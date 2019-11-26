@@ -8,7 +8,10 @@ import java.util.ArrayList;
 public class NPuzzleNode {
     private int[][] matrix;
     private ArrayList<NPuzzleNode> childs = new ArrayList<>();
-    NPuzzleNode parent;
+    private NPuzzleNode parent;
+    private int distanceCost;
+
+    private int pathCost;
 
     private static int lastColumnIndex, lastRowIndex;
 
@@ -141,9 +144,27 @@ public class NPuzzleNode {
         return stringBuilder.toString();
     }
 
+    public void setDistanceCost(int distanceCost) {
+        this.distanceCost = distanceCost;
+    }
+
+    public void setPathCost(int pathCost) {
+        this.pathCost = pathCost;
+    }
 
     public int[][] getMatrix() {
         return matrix;
     }
 
+    public int getDistanceCost() {
+        return distanceCost;
+    }
+
+    public int getPathCost() {
+        return pathCost;
+    }
+
+    public NPuzzleNode getParent() {
+        return parent;
+    }
 }
