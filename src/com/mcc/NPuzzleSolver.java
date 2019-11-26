@@ -16,6 +16,37 @@ public class NPuzzleSolver {
         lastRowIndex = nPuzzleState.getMatrix()[0].length - 1;
     }
 
+    public static void startSearch(NPuzzleNode initialNode, NPuzzleNode targetNode) {
+        long initialTime = System.currentTimeMillis();
+        ArrayDeque<int[][]> previousStates = new ArrayDeque<>();
+        Deque<NPuzzleNode> searchQueue = new ArrayDeque<>();
+        searchQueue.add(initialNode);
+        while (!searchQueue.isEmpty()) { //While the queue has nodes
+            var result = searchQueue
+                    .peek()
+                    .GenerateChilds()
+                    .stream()
+                    .filter(node -> {
+                        boolean alreadyAdded = !previousStates.contains(node.getMatrix());
+                        if (alreadyAdded) {
+                            previousStates.add(node.getMatrix());
+                            searchQueue.add(node);
+                        }
+                        return alreadyAdded;
+                    })
+                    .filter(node -> Arrays.deepEquals(node.getMatrix(), solution))
+                    .findFirst();
+
+            if (result.isPresent()) {
+                long elapsedTime = System.currentTimeMillis() - initialTime;
+                printSolutionPath(result.get(), elapsedTime, previousStates.size());
+                return;
+            }
+            searchQueue.poll();
+        }
+        System.out.println("Search finished, without results");
+    }
+
     public static void startSearch2(NPuzzleNode initialNode, NPuzzleNode targetNode) {
         long initialTime = System.currentTimeMillis();
         ArrayDeque<int[][]> previousStates = new ArrayDeque<>();
@@ -23,7 +54,7 @@ public class NPuzzleSolver {
         searchQueue.add(initialNode);
         previousStates.add(initialNode.getMatrix());
 
-        while (!searchQueue.isEmpty()) { //While the queue has nodes
+        while (!searchQueue.isEmpty()) {
             if (Arrays.deepEquals(searchQueue.peek().getMatrix(), solution)) {
                 long elapsedTime = System.currentTimeMillis() - initialTime;
                 printSolutionPath(searchQueue.peek(), elapsedTime, previousStates.size());

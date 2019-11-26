@@ -47,6 +47,6 @@ public class Main {
         NPuzzleNode initialPuzzle = new NPuzzleNode(valueOfN,valueOfN, intArray);
         initialPuzzle.print("Initial");
 
-        NPuzzleSolver.startSearch2(initialPuzzle, targetPuzzle);
+        NPuzzleSolver.startSearch(initialPuzzle, targetPuzzle);
     }
 }
