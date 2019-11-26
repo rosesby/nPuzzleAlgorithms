@@ -9,7 +9,7 @@ public class Main {
         FileReader fileReaderCatalog;
         BufferedReader bufferedReader;
 
-        fileReaderCatalog = new FileReader("src/data5.txt");
+        fileReaderCatalog = new FileReader("src/data4.txt");
         bufferedReader = new BufferedReader(fileReaderCatalog);
 
         String numberOfGames;
