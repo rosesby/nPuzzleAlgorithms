@@ -2,11 +2,12 @@ package com.mcc;
 
 import org.apache.commons.lang3.SerializationUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.BrokenBarrierException;
 
-public class NPuzzleNode extends NPuzzleBoard {
-    protected ArrayList<NPuzzleNode> childs = new ArrayList<>();
+public class NPuzzleNode extends NPuzzleBoard implements Serializable {
+    private ArrayList<NPuzzleNode> childs = new ArrayList<>();
     protected NPuzzleNode parent;
     int arrayMaxBound;
 

@@ -4,26 +4,95 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class NPuzzleSolver {
-    private static int[][] solution;
-    private static int lastColumnIndex, lastRowIndex;
 
     private NPuzzleSolver() {
     }
 
-    public static void setWorkingSolution(NPuzzleNode nPuzzleState) {
-        solution = nPuzzleState.getMatrix();
-        lastColumnIndex = nPuzzleState.getMatrix().length - 1;
-        lastRowIndex = nPuzzleState.getMatrix()[0].length - 1;
-    }
-
-    public static void startSearch(NPuzzleNode initialNode, NPuzzleNode targetNode) {
+    public static void AStarChildrenFirstStreams(NPuzzleNodeManhattan initialNode, int[][] target) {
         long initialTime = System.currentTimeMillis();
         ArrayDeque<int[][]> previousStates = new ArrayDeque<>();
+        PriorityQueue<NPuzzleNodeManhattan> searchQueue = new PriorityQueue<>();
+        searchQueue.add(initialNode);
+        while (!searchQueue.isEmpty()) { //While the queue has nodes
+            var result = searchQueue
+                    .poll()
+                    .GenerateChildren(target)
+                    .stream()
+                    .filter(node -> {
+                        boolean alreadyAdded = !previousStates.contains(node.getMatrix());
+                        if (alreadyAdded) {
+                            previousStates.add(node.getMatrix());
+                            searchQueue.add(node);
+                        }
+                        return alreadyAdded;
+                    })
+                    .filter(node -> Arrays.deepEquals(node.getMatrix(), target))
+                    .findFirst();
+
+            if (result.isPresent()) {
+                long elapsedTime = System.currentTimeMillis() - initialTime;
+                printSolutionPath(result.get(), elapsedTime, previousStates.size());
+                return;
+            }
+        }
+        System.out.println("Search finished, without results");
+    }
+
+    public static void AStarChildrenFirst(NPuzzleNodeManhattan initialNode, int[][] target) {
+        long initialTime = System.currentTimeMillis();
+        Deque<int[][]> previousStates = new ArrayDeque<>();
+        Deque<NPuzzleNodeManhattan> searchQueue = new ArrayDeque<>();
+        searchQueue.add(initialNode);
+        previousStates.add(initialNode.getMatrix());
+        while (!searchQueue.isEmpty()) {
+            NPuzzleNodeManhattan actualNode = searchQueue.poll();
+            for (NPuzzleNodeManhattan node : actualNode.GenerateChildren(target)) {
+                if (!previousStates.contains(node.getMatrix())) {
+                    previousStates.add(node.getMatrix());
+                    searchQueue.add(node);
+                    if (Arrays.deepEquals(node.getMatrix(), target)) {
+                        long elapsedTime = System.currentTimeMillis() - initialTime;
+                        printSolutionPath(node, elapsedTime, previousStates.size());
+                        return;
+                    }
+                }
+            }
+        }
+        System.out.println("Search finished, without results");
+    }
+
+    public static void AStar(NPuzzleNodeManhattan initialNode, int[][] target) {
+        long initialTime = System.currentTimeMillis();
+        Deque<int[][]> generatedStates = new ArrayDeque<>();
+        Queue<NPuzzleNodeManhattan> searchQueue = new PriorityQueue<>();
+        searchQueue.add(initialNode);
+        generatedStates.add(initialNode.getMatrix());
+        while (!searchQueue.isEmpty()) {
+            NPuzzleNodeManhattan actualNode = searchQueue.poll();
+            if (Arrays.deepEquals(actualNode.getMatrix(), target)) {
+                long elapsedTime = System.currentTimeMillis() - initialTime;
+                printSolutionPath(actualNode, elapsedTime, generatedStates.size());
+                return;
+            }
+            actualNode.GenerateChildren(target).forEach(node -> {
+                if (!generatedStates.contains(node.getMatrix())) {
+                    generatedStates.add(node.getMatrix());
+                    searchQueue.add(node);
+                }
+            });
+        }
+        System.out.println("Search finished, without results");
+    }
+
+    //BFSChildrenFirst versión funcional, desventaja mas lento que BFSChildrenFirst no funcional
+    public static void BFSChildrenFirstStreams(NPuzzleNode initialNode, int[][] target) {
+        long initialTime = System.currentTimeMillis();
+        Deque<int[][]> previousStates = new ArrayDeque<>();
         Deque<NPuzzleNode> searchQueue = new ArrayDeque<>();
         searchQueue.add(initialNode);
         while (!searchQueue.isEmpty()) { //While the queue has nodes
             var result = searchQueue
-                    .peek()
+                    .poll()
                     .GenerateChildren()
                     .stream()
                     .filter(node -> {
@@ -34,7 +103,7 @@ public class NPuzzleSolver {
                         }
                         return alreadyAdded;
                     })
-                    .filter(node -> Arrays.deepEquals(node.getMatrix(), solution))
+                    .filter(node -> Arrays.deepEquals(node.getMatrix(), target))
                     .findFirst();
 
             if (result.isPresent()) {
@@ -42,32 +111,54 @@ public class NPuzzleSolver {
                 printSolutionPath(result.get(), elapsedTime, previousStates.size());
                 return;
             }
-            searchQueue.poll();
         }
         System.out.println("Search finished, without results");
     }
 
-    public static void startSearch2(NPuzzleNode initialNode, NPuzzleNode targetNode) {
+    //El BFS de fuerza bruta que resultó ser más veloz
+    public static void BFSChildrenFirst(NPuzzleNode initialNode, int[][] target) {
         long initialTime = System.currentTimeMillis();
-        ArrayDeque<int[][]> previousStates = new ArrayDeque<>();
+        Deque<int[][]> generatedStates = new ArrayDeque<>();
         Deque<NPuzzleNode> searchQueue = new ArrayDeque<>();
         searchQueue.add(initialNode);
-        previousStates.add(initialNode.getMatrix());
-
+        generatedStates.add(initialNode.getMatrix());
         while (!searchQueue.isEmpty()) {
-            if (Arrays.deepEquals(searchQueue.peek().getMatrix(), solution)) {
+            NPuzzleNode actualNode = searchQueue.poll();
+            for (NPuzzleNode node : actualNode.GenerateChildren()) {
+                if (!generatedStates.contains(node.getMatrix())) {
+                    generatedStates.add(node.getMatrix());
+                    searchQueue.add(node);
+                    if (Arrays.deepEquals(node.getMatrix(), target)) {
+                        long elapsedTime = System.currentTimeMillis() - initialTime;
+                        printSolutionPath(node, elapsedTime, generatedStates.size());
+                        return;
+                    }
+                }
+            }
+        }
+        System.out.println("Search finished, without results");
+    }
+
+    //Es más lento que BFSChildrenFirst
+    public static void BFS(NPuzzleNode initialNode, int[][] target) {
+        long initialTime = System.currentTimeMillis();
+        Deque<int[][]> generatedStates = new ArrayDeque<>();
+        Deque<NPuzzleNode> searchQueue = new ArrayDeque<>();
+        searchQueue.add(initialNode);
+        generatedStates.add(initialNode.getMatrix());
+        while (!searchQueue.isEmpty()) {
+            NPuzzleNode actualNode = searchQueue.poll();
+            if (Arrays.deepEquals(actualNode.getMatrix(), target)) {
                 long elapsedTime = System.currentTimeMillis() - initialTime;
-                printSolutionPath(searchQueue.peek(), elapsedTime, previousStates.size());
+                printSolutionPath(actualNode, elapsedTime, generatedStates.size());
                 return;
             }
-
-            searchQueue.peek().GenerateChildren().forEach(node -> {
-                if (!previousStates.contains(node.getMatrix())) {
-                    previousStates.add(node.getMatrix());
+            for (NPuzzleNode node : actualNode.GenerateChildren()) {
+                if (!generatedStates.contains(node.getMatrix())) {
+                    generatedStates.add(node.getMatrix());
                     searchQueue.add(node);
                 }
-            });
-            searchQueue.poll();
+            }
         }
         System.out.println("Search finished, without results");
     }
@@ -78,14 +169,15 @@ public class NPuzzleSolver {
         boolean condition;
         int stageCounter = actualNode.getParentHierarchyNumber();
         do {
-            stringBuilder.insert(0, "Paso " + stageCounter  + "\n" + actualNode.toString() + "\n");
+            stringBuilder.insert(0, "Paso " + stageCounter + "\n" + actualNode.toString() + "\n");
             condition = actualNode.getParent() != null;
             actualNode = actualNode.getParent();
             stageCounter--;
         } while (condition);
         System.out.println("Solution Path");
         System.out.print(stringBuilder);
-        System.out.println("ElapseTime : " + TimeUnit.MILLISECONDS.toSeconds(elapsedTime) + "s");
+        double seconds = (double)elapsedTime/1000d;
+        System.out.println("ElapseTime : " + seconds + "s");
         System.out.println("Generated tables : " + size);
     }
 }
