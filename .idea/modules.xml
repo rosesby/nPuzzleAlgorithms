@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Patrón Tablero.iml" filepath="$PROJECT_DIR$/Patrón Tablero.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nPuzzleAlgorithms.iml" filepath="$PROJECT_DIR$/nPuzzleAlgorithms.iml" />
     </modules>
   </component>
 </project>

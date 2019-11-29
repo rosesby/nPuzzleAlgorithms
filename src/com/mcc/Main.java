@@ -24,7 +24,7 @@ public class Main {
         targets = bufferedReader.readLine();
         tables = bufferedReader.readLine();
 
-        int[] ints = {1,2,3,4,5,0,7,8,9};
+        int[] ints = {1, 2, 3, 4, 5, 0, 7, 8, 9};
 
 /*        String[] strArray = tables.split(" ");
         int[] intArray = new int[strArray.length];
@@ -35,18 +35,27 @@ public class Main {
         int[] intArrayTarget = Arrays.stream(targets.split(" "))
                 .mapToInt(Integer::parseInt)
                 .toArray();
-        NPuzzleNode targetPuzzle = new NPuzzleNode(valueOfN,valueOfN, intArrayTarget);
+        NPuzzleNode targetPuzzle = new NPuzzleNode(intArrayTarget, null);
         targetPuzzle.print("Target");
-
-        NPuzzleSolver.setWorkingSolution(targetPuzzle);
 
         int[] intArray = Arrays.stream(tables.split(" "))
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        NPuzzleNode initialPuzzle = new NPuzzleNode(valueOfN,valueOfN, intArray);
+        NPuzzleNode initialPuzzle = new NPuzzleNode(intArray, null);
         initialPuzzle.print("Initial");
 
-        NPuzzleSolver.startSearch(initialPuzzle, targetPuzzle);
+        var mi = new NPuzzleNodeManhattan(initialPuzzle, 0, targetPuzzle.getMatrix());
+        NPuzzleSolver.AStar(mi, targetPuzzle.getMatrix());
+        mi = new NPuzzleNodeManhattan(initialPuzzle, 0, targetPuzzle.getMatrix());
+        NPuzzleSolver.AStarChildrenFirst(mi, targetPuzzle.getMatrix());
+        mi = new NPuzzleNodeManhattan(initialPuzzle, 0, targetPuzzle.getMatrix());
+        NPuzzleSolver.AStarChildrenFirstStreams(mi, targetPuzzle.getMatrix());
+
+        NPuzzleSolver.BFS(initialPuzzle, targetPuzzle.getMatrix());
+        initialPuzzle = new NPuzzleNode(intArray, null);
+        NPuzzleSolver.BFSChildrenFirst(initialPuzzle, targetPuzzle.getMatrix());
+        initialPuzzle = new NPuzzleNode(intArray, null);
+        NPuzzleSolver.BFSChildrenFirstStreams(initialPuzzle, targetPuzzle.getMatrix());
     }
 }
