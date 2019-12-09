@@ -12,9 +12,10 @@ public class NPuzzleSolver {
 
     public static void AStarStreams(NPuzzleNodeManhattan initialNode, int[][] target) {
         long initialTime = System.currentTimeMillis();
-        ArrayDeque<int[][]> previousStates = new ArrayDeque<>();
+        Deque<int[][]> previousStates = new ArrayDeque<>();
         PriorityQueue<NPuzzleNodeManhattan> searchQueue = new PriorityQueue<>();
         searchQueue.add(initialNode);
+        previousStates.add(initialNode.getMatrix());
         while (!searchQueue.isEmpty()) { //While the queue has nodes
             if (Arrays.deepEquals(searchQueue.peek().getMatrix(), target)) {
                 long elapsedTime = System.currentTimeMillis() - initialTime;
