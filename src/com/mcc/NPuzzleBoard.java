@@ -8,10 +8,17 @@ public class NPuzzleBoard {
     protected int[][] matrix;
 
     public NPuzzleBoard (int[] board) throws Exception {
+       matrix = Array1DTo2D(board);
+    }
+
+    public NPuzzleBoard(int[][] blocks){
+        matrix = blocks;
+    }
+
+    public static int[][] Array1DTo2D(int[] board) throws Exception {
         int n = (int) Math.sqrt(board.length);
-        if (n*n != board.length)
-            throw new Exception("Data array does not match n*n dimensions");
-        matrix = new int[n][n];
+        if (n*n != board.length) throw new Exception("Data array does not match n*n dimensions");
+        int[][] matrix = new int[n][n];
         int position = 0;
         for (int i = 0; i < n ; i++) {
             for (int j = 0; j < n ; j++) {
@@ -19,10 +26,7 @@ public class NPuzzleBoard {
                 position++;
             }
         }
-    }
-
-    public NPuzzleBoard(int[][] blocks){
-        matrix = blocks;
+        return matrix;
     }
 
     public int[][] moveZeroUp(int[][] matrix, int[] zeroIndex) {

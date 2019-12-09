@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.concurrent.BrokenBarrierException;
 
 public class NPuzzleNode extends NPuzzleBoard implements Serializable {
-    private ArrayList<NPuzzleNode> childs = new ArrayList<>();
     protected NPuzzleNode parent;
-    int arrayMaxBound;
+    protected int arrayMaxBound;
 
     public NPuzzleNode(int[] board, NPuzzleNode parent) throws Exception {
         super(board);
@@ -30,6 +29,8 @@ public class NPuzzleNode extends NPuzzleBoard implements Serializable {
         int[] zeroIndex = findZero();
         int zx = zeroIndex[0];
         int zy = zeroIndex[1];
+
+        ArrayList<NPuzzleNode> childs = new ArrayList<>();
 
         if (zy > 0){
             NPuzzleNode up = new NPuzzleNode(moveZeroUp(SerializationUtils.clone(matrix), zeroIndex), this);

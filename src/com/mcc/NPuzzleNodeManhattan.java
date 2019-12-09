@@ -2,16 +2,16 @@ package com.mcc;
 
 import org.apache.commons.lang3.SerializationUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class NPuzzleNodeManhattan extends NPuzzleNode implements AStarHeuristic<NPuzzleNodeManhattan> {
-    private ArrayList<NPuzzleNodeManhattan> childs = new ArrayList<>();
     private int manhattanDistance;
     private int movementNumber;
 
-    public NPuzzleNodeManhattan(int[] board, NPuzzleNode parent, int movementNumber, int[][] target) throws Exception {
+    public NPuzzleNodeManhattan(int[] board, NPuzzleNode parent, int movementNumber, int[] target) throws Exception {
         super(board, parent);
-        initialize(movementNumber, target);
+        initialize(movementNumber, Array1DTo2D(target));
     }
 
     public NPuzzleNodeManhattan(int[][] initialState, NPuzzleNode parent, int movementNumber, int[][] target) {
@@ -43,6 +43,8 @@ public class NPuzzleNodeManhattan extends NPuzzleNode implements AStarHeuristic<
         int zx = zeroIndex[0];
         int zy = zeroIndex[1];
         int childrenLevelNumber = movementNumber + 1;
+
+        ArrayList<NPuzzleNodeManhattan> childs = new ArrayList<>();
 
         if (zy > 0){
             NPuzzleNodeManhattan up = new NPuzzleNodeManhattan(
